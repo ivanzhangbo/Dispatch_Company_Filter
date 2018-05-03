@@ -1,6 +1,7 @@
 import re
 import os
 import requests
+import numpy as np
 import pandas as pd
 from sys import exit
 from time import sleep
@@ -83,7 +84,59 @@ def test():
     pass
 
 
-if __name__ == "__main__":
+# URLをセットしてリクエスト。
+detail_html = requests.get("https://type.jp/job-1/1107535_detail/?companyMessage=false", headers=headers)
+
+# スクレイピング開始。
+soup =  BeautifulSoup(detail_html.content, "lxml")
+
+# 会社名を取得。
+company = soup.find("a", class_="corp-link base_gray size-14px weight-bold")
+company = re.sub(r'<.*?>', '', company.text)
+
+# 年収を取得。
+baseSalary = soup.find("p", itemprop="baseSalary")
+
+try:
+    money_str = re.search(r'(年|月).*?[0-9,]*?万円.*?[0-9,]万円', baseSalary.text).group()
+except:
+    try:
+        money_str = re.search(r'(年|月).*?[0-9,]*?万円', baseSalary.text).group()
+
+    except:
+        pass
+
+try:
+    money_int = re.findall(r'[0-9,]{1,}', money_str)
+
+    if "月" in money_str:
+        money_int = [int(n) * 12 for n in money_int]
+    else:
+        money_int = [int(n) for n in money_int]
+
+    money_int.reverse()
+
+    if len(money_int) >= 2:
+        max_income, min_income = money_int[0], money_int[1]
+    elif len(money_int) == 1:
+        max_income, min_income = money_int[0], money_int[0]
+
+except:
+    max_income, min_income = 0, 0
+
+# コーパスを取得。
+
+print("会社名は{}です".format(company))
+print("年収は最大{}万円、最小{}万円です".format(max_income, min_income))
+print("メモ:{}".format(money_str))
+
+
+# re.sub(r'<.*?>', '', soup)
+
+# money = '月収1,000万'
+
+
+# if __name__ == "__main__":
 
     # get_index()
     # get_detail()

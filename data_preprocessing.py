@@ -7,7 +7,9 @@ df.columns = ["url","company", "min_income", "max_income", "dispatch_flg", "memo
 df = df.dropna(subset=['company'])
 df = df.dropna(subset=['memo'])
 df = df.dropna(subset=['corpus'])
-df = df.drop_duplicates(['corpus'])
+# df = df.drop_duplicates(['corpus'])
+df = df.drop_duplicates(['company'])
+
 
 print(len(df))
 

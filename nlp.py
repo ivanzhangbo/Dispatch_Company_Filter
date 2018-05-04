@@ -3,8 +3,8 @@ import MeCab
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-DIC = os.environ['DIC']
-print(DIC)
+path = os.environ.get("DIC_PATH")
+print(path)
 #
 # def tokenization():
 #

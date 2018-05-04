@@ -76,8 +76,12 @@ def get_detail(url):
     soup =  BeautifulSoup(detail_html.content, "lxml")
 
     # 会社名を取得。
-    company = soup.find("a", class_="corp-link base_gray size-14px weight-bold")
-    company = re.sub(r'<.*?>', '', company.text)
+    company = ""
+    try:
+        company = soup.find("a", class_="corp-link base_gray size-14px weight-bold")
+        company = re.sub(r'<.*?>', '', company.text)
+    except:
+        pass
 
     # 年収を取得。
     baseSalary = soup.find("p", itemprop="baseSalary")

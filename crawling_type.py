@@ -61,27 +61,10 @@ def get_index():
     urls.to_csv("index/urls_" + datetime.now().strftime("%Y%m%d") + ".csv", index=False)
 
 
-def get_all():
-
-    # urlsオブジェクトが作られていないなら、一番新しいurls_YYYYmmdd.csvを読み込む。
-    try:
-        urls
-
-    except:
-        try:
-            f_name = (sorted(os.listdir("index"), reverse=True))[0]
-            urls = pd.read_csv("index/" + f_name)
-
-        except:
-            print("There's no index file")
-            exit()
-
-    for i in urls["url"].values:
-        get_detail(i)
-        sleep(1)
-
-
 def get_detail(url):
+
+    # クローリングのマナー。
+    sleep(1)
 
     # 保存に使うDFをリセット。
     df = pd.DataFrame(columns=["url","company", "min_income", "max_income", "dispatch_flg", "memo", "corpus"])
@@ -100,6 +83,7 @@ def get_detail(url):
     baseSalary = soup.find("p", itemprop="baseSalary")
 
     money_str = ""
+
     try:
         money_str = re.search(r'(年|月).*?[0-9,]*?万円.*?[0-9,]万円', baseSalary.text).group()
     except:
@@ -149,7 +133,27 @@ def get_detail(url):
     df.to_csv("data/test.csv",  index=False, mode='a')
 
 
+def get_all():
+
+    # urlsオブジェクトが作られていないなら、一番新しいurls_YYYYmmdd.csvを読み込む。ないならexit。
+    try:
+        urls
+
+    except:
+        try:
+            f_name = (sorted(os.listdir("index"), reverse=True))[0]
+            urls = pd.read_csv("index/" + f_name)
+
+        except:
+            print("There's no index file")
+            exit()
+
+    # URLの数だけget_detail関数をぶん回す。
+    for i in urls["url"].values:
+        get_detail(i)
+
+
 if __name__ == "__main__":
 
     # get_index()
-    get_detail("https://type.jp/job-1/1100708_detail/?companyMessage=false")
+    get_all()

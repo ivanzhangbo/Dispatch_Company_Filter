@@ -112,12 +112,16 @@ def get_detail(url):
     except:
         pass
 
+    corpus = ""
     # コーパスを取得し、正規化する。
-    corpus = [re.sub(r'<.*?>', '', i.text) for i in soup.find_all("p")]
-    corpus = ",".join(corpus)
-    corpus = re.sub(r",", '', corpus)
-    corpus = re.sub(r"\n", '', corpus)
-    corpus = re.sub(r"\s", '', corpus)
+    try:
+        corpus = [re.sub(r'<.*?>', '', i.text) for i in soup.find_all("p")]
+        corpus = ",".join(corpus)
+        corpus = re.sub(r",", '', corpus)
+        corpus = re.sub(r"\n", '', corpus)
+        corpus = re.sub(r"\s", '', corpus)
+    except:
+        pass
 
     # 保存先ディレクトリがないなら作る。
     try:

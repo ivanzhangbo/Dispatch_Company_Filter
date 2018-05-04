@@ -1,7 +1,6 @@
 import re
 import os
 import requests
-import numpy as np
 import pandas as pd
 from sys import exit
 from time import sleep
@@ -62,7 +61,7 @@ def get_index():
     urls.to_csv("index/urls_" + datetime.now().strftime("%Y%m%d") + ".csv", index=False)
 
 
-def get_detail():
+def get_all():
 
     # urlsオブジェクトが作られていないなら、一番新しいurls_YYYYmmdd.csvを読み込む。
     try:
@@ -78,65 +77,85 @@ def get_detail():
             exit()
 
     for i in urls["url"].values:
-        print(i)
-
-def test():
-    pass
+        get_detail(i)
+        sleep(1)
 
 
-# URLをセットしてリクエスト。
-detail_html = requests.get("https://type.jp/job-1/1107535_detail/?companyMessage=false", headers=headers)
+def get_detail(url):
 
-# スクレイピング開始。
-soup =  BeautifulSoup(detail_html.content, "lxml")
+    # 保存に使うDFをリセット。
+    df = pd.DataFrame(columns=["url","company", "min_income", "max_income", "dispatch_flg", "memo", "corpus"])
 
-# 会社名を取得。
-company = soup.find("a", class_="corp-link base_gray size-14px weight-bold")
-company = re.sub(r'<.*?>', '', company.text)
+    # URLをセットしてリクエスト。
+    detail_html = requests.get(url, headers=headers)
 
-# 年収を取得。
-baseSalary = soup.find("p", itemprop="baseSalary")
+    # スクレイピング開始。
+    soup =  BeautifulSoup(detail_html.content, "lxml")
 
-try:
-    money_str = re.search(r'(年|月).*?[0-9,]*?万円.*?[0-9,]万円', baseSalary.text).group()
-except:
+    # 会社名を取得。
+    company = soup.find("a", class_="corp-link base_gray size-14px weight-bold")
+    company = re.sub(r'<.*?>', '', company.text)
+
+    # 年収を取得。
+    baseSalary = soup.find("p", itemprop="baseSalary")
+
+    money_str = ""
     try:
-        money_str = re.search(r'(年|月).*?[0-9,]*?万円', baseSalary.text).group()
+        money_str = re.search(r'(年|月).*?[0-9,]*?万円.*?[0-9,]万円', baseSalary.text).group()
+    except:
+        try:
+            money_str = re.search(r'(年|月).*?[0-9,]*?万円', baseSalary.text).group()
+
+        except:
+            pass
+
+    max_income, min_income = 0, 0
+    try:
+        money_int = re.findall(r'[0-9,]+', money_str)
+
+        if "月" in money_str:
+            money_int = [int(n) * 12 for n in money_int]
+        else:
+            money_int = [int(n) for n in money_int]
+
+        money_int.reverse()
+
+        if len(money_int) >= 2:
+            max_income, min_income = money_int[0], money_int[1]
+        elif len(money_int) == 1:
+            max_income, min_income = money_int[0], money_int[0]
 
     except:
         pass
 
-try:
-    money_int = re.findall(r'[0-9,]{1,}', money_str)
+    # コーパスを取得し、正規化する。
+    corpus = [re.sub(r'<.*?>', '', i.text) for i in soup.find_all("p")]
+    corpus = ",".join(corpus)
+    corpus = re.sub(r",", '', corpus)
+    corpus = re.sub(r"\n", '', corpus)
+    corpus = re.sub(r"\s", '', corpus)
 
-    if "月" in money_str:
-        money_int = [int(n) * 12 for n in money_int]
-    else:
-        money_int = [int(n) for n in money_int]
+    # 確認用print
+    # print("会社名:{}".format(company))
+    # print("年収:{}万円〜{}万円".format(min_income, max_income))
+    # print("メモ:{}".format(money_str))
+    # print("コーパス:{}".format(corpus))
 
-    money_int.reverse()
+    # 保存先ディレクトリがないなら作る。
+    try:
+        os.mkdir("data")
 
-    if len(money_int) >= 2:
-        max_income, min_income = money_int[0], money_int[1]
-    elif len(money_int) == 1:
-        max_income, min_income = money_int[0], money_int[0]
+    except:
+        pass
 
-except:
-    max_income, min_income = 0, 0
-
-# コーパスを取得。
-
-print("会社名は{}です".format(company))
-print("年収は最大{}万円、最小{}万円です".format(max_income, min_income))
-print("メモ:{}".format(money_str))
-
-
-# re.sub(r'<.*?>', '', soup)
-
-# money = '月収1,000万'
+    # 保存処理。
+    se = pd.Series([url, company, min_income, max_income, "", money_str, corpus], index=df.columns)
+    df = df.append(se, ignore_index=True)
+    del se
+    df.to_csv("data/test.csv",  index=False, mode='a')
 
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
 
     # get_index()
-    # get_detail()
+    get_detail("https://type.jp/job-1/1100708_detail/?companyMessage=false")

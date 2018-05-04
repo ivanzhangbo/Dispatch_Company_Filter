@@ -172,6 +172,6 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-
 # localrule
 /index
+/data

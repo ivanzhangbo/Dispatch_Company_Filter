@@ -67,7 +67,7 @@ def get_detail(url):
     sleep(1)
 
     # 保存に使うDFをリセット。
-    df = pd.DataFrame(columns=["url","company", "min_income", "max_income", "dispatch_flg", "memo", "corpus"])
+    df = pd.DataFrame(columns=['url','company', 'min_income', 'max_income', 'dispatch_flg', 'memo', 'docs'])
 
     # URLをセットしてリクエスト。
     detail_html = requests.get(url, headers=headers)
@@ -116,17 +116,17 @@ def get_detail(url):
     except:
         pass
 
-    corpus = ""
+    docs = ""
     # コーパスを取得し、正規化する。
     try:
-        corpus = [re.sub(r'<.*?>', '', i.text) for i in soup.find_all("p")]
-        corpus = ",".join(corpus)
-        corpus = re.sub(r",", '', corpus)
-        corpus = re.sub(r"\n", '', corpus)
-        corpus = re.sub(r"\s", '', corpus)
-        corpus = re.sub(r"\s", '', corpus)
-        corpus = re.sub(r"転職サイト＠type.*?ALLRIGHTSRESERVED", '', corpus)
-        corpus = re.sub(r"掲載終了予定日.*?掲載終了日前に募集を終了する可能性があります》", '', corpus)
+        docs = [re.sub(r'<.*?>', '', i.text) for i in soup.find_all("p")]
+        docs = ",".join(docs)
+        docs = re.sub(r",", '', docs)
+        docs = re.sub(r"\n", '', docs)
+        docs = re.sub(r"\s", '', docs)
+        docs = re.sub(r"\s", '', docs)
+        docs = re.sub(r"転職サイト＠type.*?ALLRIGHTSRESERVED", '', docs)
+        docs = re.sub(r"掲載終了予定日.*?掲載終了日前に募集を終了する可能性があります》", '', docs)
 
 
 
@@ -134,7 +134,7 @@ def get_detail(url):
         pass
 
     # ファイル形式をDFオブジェクトに変換。
-    se = pd.Series([url, company, min_income, max_income, "", money_str, corpus], index=df.columns)
+    se = pd.Series([url, company, min_income, max_income, "", money_str, docs], index=df.columns)
     df = df.append(se, ignore_index=True)
     return df
 
@@ -147,7 +147,7 @@ def saving(df):
     except:
         pass
 
-    df.to_csv("data/data.csv",  index=False, header=False, mode='a')
+    df.to_csv("data/data_" + datetime.now().strftime("%Y%m%d") + ".csv",  index=False, header=False, mode='a')
 
 
 

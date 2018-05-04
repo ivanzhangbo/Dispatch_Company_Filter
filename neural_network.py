@@ -4,11 +4,10 @@ import pickle
 import pandas as pd
 from sys import exit
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
+from sklearn.neural_network import MLPClassifier
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.pipeline import make_pipeline
 from sklearn.model_selection import GridSearchCV
-from sklearn.preprocessing import PolynomialFeatures
 
 def owakati():
     """
@@ -61,21 +60,23 @@ def load_stop_word():
 
 def grid_search(df):
     """
-    tf-idfとLogisticRegressionに最適のパラメータを探ります。
+    tf-idfとXGBに最適のパラメータを探ります。
     """
 
     X, y = split_data(df)
     stop_words = load_stop_word()
 
     pipe = make_pipeline(
-        TfidfVectorizer(min_df=3, use_idf=True, token_pattern=u'(?u)\\b\\w+\\b', stop_words=stop_words),
-        PolynomialFeatures(),
-        LogisticRegression()
+        TfidfVectorizer(use_idf=True, token_pattern=u'(?u)\\b\\w+\\b', stop_words=stop_words),
+        MLPClassifier()
         )
 
-    param_grid = {"logisticregression__C": [1**x for x in range(-1, 1)],
-                  "polynomialfeatures__degree": [x for x in range(15)],
-                  "tfidfvectorizer__ngram_range": [(1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8)]}
+    param_grid = {"tfidfvectorizer__ngram_range": [(1, 6), (1, 7), (1, 8)],
+                  "tfidfvectorizer__min_df": [x for x in range(2, 10)],
+                  "mlpclassifier__alpha": [1**x for x in range(-3, 3)],
+                  "mlpclassifier__activation": ["relu", "tahn"],
+                  "mlpclassifier__hidden_layer_sizes": [(100,),(200,),(300,)]
+                  }
 
     grid = GridSearchCV(pipe, param_grid, cv=5)
     grid.fit(X, y)
@@ -84,7 +85,7 @@ def grid_search(df):
     print("Best Parameters:\n{}".format(grid.best_params_))
 
 
-def logreg(df):
+def xgb_clf(df):
     """
     grid_searchの結果からテストデータのスコアを確認します。
     """
@@ -92,20 +93,20 @@ def logreg(df):
     X, y = split_data(df)
     stop_words = load_stop_word()
 
-    vectorizer = TfidfVectorizer(min_df=3, use_idf=True, token_pattern=u'(?u)\\b\\w+\\b', stop_words=stop_words, ngram_range=(1, 7))
+    vectorizer = TfidfVectorizer(min_df=3, use_idf=T, token_pattern=u'(?u)\\b\\w+\\b', stop_words=stop_words, ngram_range=(1, 7))
     X_vecs = vectorizer.fit_transform(X)
     X_vecs = X_vecs.toarray()
 
-    X_train, X_test, y_train, y_test = train_test_split(X_vecs, y)
+    X_train, X_test, y_train, y_test = train_test_split(X_vecs, y, random_state=0)
 
-    model = LogisticRegression(C=1.0)
+    model = xgb.sklearn.XGBClassifier(max_depth=3)
     model.fit(X_train, y_train)
 
-    print("Train Data Score:{}".format(model.score(X_train, y_train)))
-    print("Test Data Score:{}".format(model.score(X_test, y_test)))
+    print("Train Data Score:\t{}".format(model.score(X_train, y_train)))
+    print("Test Data Score:\t{}".format(model.score(X_test, y_test)))
 
 if __name__ == "__main__":
 
     df = owakati()
     grid_search(df)
-    # logreg(df)
+    # xgb_clf(df)

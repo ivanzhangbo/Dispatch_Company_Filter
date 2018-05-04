@@ -8,6 +8,4 @@ df = df.dropna(subset=['corpus'])
 
 df = df.reset_index(drop=True)
 
-print(len(df))
-
-# df.to_csv("data/data")
+df[:200].to_csv("data/sample.csv")

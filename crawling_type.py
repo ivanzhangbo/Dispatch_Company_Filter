@@ -124,6 +124,11 @@ def get_detail(url):
         corpus = re.sub(r",", '', corpus)
         corpus = re.sub(r"\n", '', corpus)
         corpus = re.sub(r"\s", '', corpus)
+        corpus = re.sub(r"\s", '', corpus)
+        corpus = re.sub(r"転職サイト＠type.*?ALLRIGHTSRESERVED", '', corpus)
+        corpus = re.sub(r"掲載終了予定日.*?掲載終了日前に募集を終了する可能性があります》", '', corpus)
+
+
 
     except:
         pass

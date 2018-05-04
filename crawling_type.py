@@ -124,9 +124,17 @@ def get_detail(url):
         corpus = re.sub(r",", '', corpus)
         corpus = re.sub(r"\n", '', corpus)
         corpus = re.sub(r"\s", '', corpus)
+
     except:
         pass
 
+    # ファイル形式をDFオブジェクトに変換。
+    se = pd.Series([url, company, min_income, max_income, "", money_str, corpus], index=df.columns)
+    df = df.append(se, ignore_index=True)
+    return df
+
+
+def saving(df):
     # 保存先ディレクトリがないなら作る。
     try:
         os.mkdir("data")
@@ -134,11 +142,8 @@ def get_detail(url):
     except:
         pass
 
-    # 保存処理。
-    se = pd.Series([url, company, min_income, max_income, "", money_str, corpus], index=df.columns)
-    df = df.append(se, ignore_index=True)
-    del se
-    df.to_csv("data/test.csv",  index=False, mode='a')
+    df.to_csv("data/data.csv",  index=False, header=False, mode='a')
+
 
 
 def get_all():
@@ -158,7 +163,8 @@ def get_all():
 
     # URLの数だけget_detail関数をぶん回す。
     for i in urls["url"].values:
-        get_detail(i)
+        df = get_detail(i)
+        saving(df)
 
 
 if __name__ == "__main__":

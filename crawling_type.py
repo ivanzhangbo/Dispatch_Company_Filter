@@ -135,12 +135,6 @@ def get_detail(url):
     corpus = re.sub(r"\n", '', corpus)
     corpus = re.sub(r"\s", '', corpus)
 
-    # 確認用print
-    # print("会社名:{}".format(company))
-    # print("年収:{}万円〜{}万円".format(min_income, max_income))
-    # print("メモ:{}".format(money_str))
-    # print("コーパス:{}".format(corpus))
-
     # 保存先ディレクトリがないなら作る。
     try:
         os.mkdir("data")

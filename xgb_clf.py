@@ -67,11 +67,14 @@ def grid_search(df):
     stop_words = load_stop_word()
 
     pipe = make_pipeline(
-        TfidfVectorizer(min_df=3, use_idf=True, token_pattern=u'(?u)\\b\\w+\\b', stop_words=stop_words),
+        TfidfVectorizer(use_idf=True, token_pattern=u'(?u)\\b\\w+\\b', stop_words=stop_words),
         xgb.sklearn.XGBClassifier()
         )
 
-    param_grid = {"tfidfvectorizer__ngram_range": [(1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8)]}
+    param_grid = {"tfidfvectorizer__ngram_range": [(1, 6), (1, 7), (1, 8)],
+                  "tfidfvectorizer__min_df": [x for x in range(2, 10)],
+                  "xgbclassifier__max_depth": [x for x in range(1, 10)],
+                  }
 
     grid = GridSearchCV(pipe, param_grid, cv=5)
     grid.fit(X, y)
@@ -80,7 +83,7 @@ def grid_search(df):
     print("Best Parameters:\n{}".format(grid.best_params_))
 
 
-def logreg(df):
+def xgb_clf(df):
     """
     grid_searchの結果からテストデータのスコアを確認します。
     """
@@ -88,20 +91,20 @@ def logreg(df):
     X, y = split_data(df)
     stop_words = load_stop_word()
 
-    vectorizer = TfidfVectorizer(min_df=3, use_idf=True, token_pattern=u'(?u)\\b\\w+\\b', stop_words=stop_words, ngram_range=(1, 7))
+    vectorizer = TfidfVectorizer(min_df=3, use_idf=T, token_pattern=u'(?u)\\b\\w+\\b', stop_words=stop_words, ngram_range=(1, 7))
     X_vecs = vectorizer.fit_transform(X)
     X_vecs = X_vecs.toarray()
 
-    X_train, X_test, y_train, y_test = train_test_split(X_vecs, y)
+    X_train, X_test, y_train, y_test = train_test_split(X_vecs, y, random_state=0)
 
-    model = xgb.sklearn.XGBClassifier()
+    model = xgb.sklearn.XGBClassifier(max_depth=3)
     model.fit(X_train, y_train)
 
-    print("Train Data Score:{}".format(model.score(X_train, y_train)))
-    print("Test Data Score:{}".format(model.score(X_test, y_test)))
+    print("Train Data Score:\t{}".format(model.score(X_train, y_train)))
+    print("Test Data Score:\t{}".format(model.score(X_test, y_test)))
 
 if __name__ == "__main__":
 
     df = owakati()
     grid_search(df)
-    # logreg(df)
+    # xgb_clf(df)

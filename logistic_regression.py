@@ -8,6 +8,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.pipeline import make_pipeline
 from sklearn.model_selection import GridSearchCV
+from sklearn.preprocessing import PolynomialFeatures
 
 def owakati():
     """
@@ -68,10 +69,12 @@ def grid_search(df):
 
     pipe = make_pipeline(
         TfidfVectorizer(min_df=3, use_idf=True, token_pattern=u'(?u)\\b\\w+\\b', stop_words=stop_words),
+        PolynomialFeatures(),
         LogisticRegression()
         )
 
     param_grid = {"logisticregression__C": [1**x for x in range(-1, 1)],
+                  "polynomialfeatures__degree": [x for x in range(15)],
                   "tfidfvectorizer__ngram_range": [(1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8)]}
 
     grid = GridSearchCV(pipe, param_grid, cv=5)

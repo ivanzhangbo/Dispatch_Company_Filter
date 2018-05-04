@@ -42,9 +42,8 @@ def split_data(df):
     """
 
     X, y = df['owakati'].values, df['dispatch_flg'].values
-    X_train, x_test, y_train, y_test = train_test_split(X, y, random_state=0)
-
-    return X_train, x_test, y_train, y_test
+    del df
+    return X, y
 
 
 def load_stop_word():
@@ -64,7 +63,7 @@ def grid_search(df):
     tf-idfとLogisticRegressionに最適のパラメータを探ります。
     """
 
-    X_train, x_test, y_train, y_test = split_data(df)
+    X, y = split_data(df)
     stop_words = load_stop_word()
 
     pipe = make_pipeline(
@@ -72,17 +71,35 @@ def grid_search(df):
         LogisticRegression()
         )
 
-    param_grid = {"logisticregression__C": [1**x for x in range(-3, 3)],
-                  "tfidfvectorizer__ngram_range": [(1, 1), (1, 2), (1, 3)]}
+    param_grid = {"logisticregression__C": [1**x for x in range(-1, 1)],
+                  "tfidfvectorizer__ngram_range": [(1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8)]}
 
     grid = GridSearchCV(pipe, param_grid, cv=5)
-    grid.fit(X_train, y_train)
+    grid.fit(X, y)
 
     print("Best Score: {:.3f}".format(grid.best_score_))
     print("Best Parameters:\n{}".format(grid.best_params_))
 
 
+def logreg(df):
+
+    X, y = split_data(df)
+    stop_words = load_stop_word()
+
+    vectorizer = TfidfVectorizer(min_df=3, use_idf=True, token_pattern=u'(?u)\\b\\w+\\b', stop_words=stop_words, ngram_range=(1, 7))
+    X_vecs = vectorizer.fit_transform(X)
+    X_vecs = X_vecs.toarray()
+
+    X_train, X_test, y_train, y_test = train_test_split(X_vecs, y)
+
+    model = LogisticRegression(C=1.0)
+    model.fit(X_train, y_train)
+
+    print(model.score(X_train, y_train))
+    print(model.score(X_test, y_test))
+
 if __name__ == "__main__":
 
     df = owakati()
     grid_search(df)
+    # logreg(df)

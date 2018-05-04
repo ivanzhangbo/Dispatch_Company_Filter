@@ -4,7 +4,7 @@ import pickle
 import pandas as pd
 from sys import exit
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
+import xgboost as xgb
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.pipeline import make_pipeline
 from sklearn.model_selection import GridSearchCV
@@ -60,7 +60,7 @@ def load_stop_word():
 
 def grid_search(df):
     """
-    tf-idfとLogisticRegressionに最適のパラメータを探ります。
+    tf-idfとXGBに最適のパラメータを探ります。
     """
 
     X, y = split_data(df)
@@ -68,11 +68,10 @@ def grid_search(df):
 
     pipe = make_pipeline(
         TfidfVectorizer(min_df=3, use_idf=True, token_pattern=u'(?u)\\b\\w+\\b', stop_words=stop_words),
-        LogisticRegression()
+        xgb.sklearn.XGBClassifier()
         )
 
-    param_grid = {"logisticregression__C": [1**x for x in range(-1, 1)],
-                  "tfidfvectorizer__ngram_range": [(1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8)]}
+    param_grid = {"tfidfvectorizer__ngram_range": [(1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8)]}
 
     grid = GridSearchCV(pipe, param_grid, cv=5)
     grid.fit(X, y)
@@ -95,7 +94,7 @@ def logreg(df):
 
     X_train, X_test, y_train, y_test = train_test_split(X_vecs, y)
 
-    model = LogisticRegression(C=1.0)
+    model = xgb.sklearn.XGBClassifier()
     model.fit(X_train, y_train)
 
     print("Train Data Score:{}".format(model.score(X_train, y_train)))
@@ -104,5 +103,5 @@ def logreg(df):
 if __name__ == "__main__":
 
     df = owakati()
-    # grid_search(df)
-    logreg(df)
+    grid_search(df)
+    # logreg(df)

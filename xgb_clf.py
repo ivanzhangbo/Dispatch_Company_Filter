@@ -99,11 +99,12 @@ def xgb_clf(df):
     model = xgb.sklearn.XGBClassifier(max_depth=3)
     model.fit(X_train, y_train)
 
-    print("Train Data Score:\t{}".format(model.score(X_train, y_train)))
-    print("Test Data Score:\t{}".format(model.score(X_test, y_test)))
+    with open("result_xgb.txt", "w") as file:
+        print("Train Data Score:{}".format(model.score(X_train, y_train)), file=file)
+        print("Test Data Score:{}".format(model.score(X_test, y_test)), file=file)
 
 if __name__ == "__main__":
 
     df = owakati()
-    grid_search(df)
-    # xgb_clf(df)
+    # grid_search(df)
+    xgb_clf(df)

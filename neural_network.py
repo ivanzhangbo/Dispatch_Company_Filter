@@ -81,8 +81,9 @@ def grid_search(df):
     grid = GridSearchCV(pipe, param_grid, cv=5)
     grid.fit(X, y)
 
-    print("Best Score: {:.3f}".format(grid.best_score_))
-    print("Best Parameters:\n{}".format(grid.best_params_))
+    with open("result_nlp.txt", "w") as file:
+        print("Train Data Score:{}".format(model.score(X_train, y_train)), file=file)
+        print("Test Data Score:{}".format(model.score(X_test, y_test)), file=file)
 
 
 def xgb_clf(df):

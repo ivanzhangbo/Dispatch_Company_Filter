@@ -1,0 +1,3 @@
+Best Score: 0.870
+Best Parameters:
+{'tfidfvectorizer__min_df': 3, 'tfidfvectorizer__ngram_range': (1, 7), 'xgbclassifier__n_estimators': 50, 'xgbclassifier__reg_alpha': 0.9}

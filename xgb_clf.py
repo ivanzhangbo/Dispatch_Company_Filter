@@ -80,7 +80,7 @@ def grid_search(df):
 
     with open("result_xgb.txt", "w") as file:
         print("Best Score: {:.3f}".format(grid.best_score_), file=file)
-        print("Best Parameters:\n{}".format(grid.best_params_) file=file)
+        print("Best Parameters:\n{}".format(grid.best_params_), file=file)
 
 
 def xgb_clf(df):

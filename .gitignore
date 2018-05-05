@@ -176,3 +176,4 @@ venv.bak/
 /index
 /data
 /cleansing_data
+/train_test_data

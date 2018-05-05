@@ -68,12 +68,11 @@ def grid_search(df):
 
     pipe = make_pipeline(
         TfidfVectorizer(use_idf=True, token_pattern=u'(?u)\\b\\w+\\b', stop_words=stop_words),
-        xgb.sklearn.XGBClassifier()
+        xgb.sklearn.XGBClassifier(max_depth=3)
         )
 
     param_grid = {"tfidfvectorizer__ngram_range": [(1, 6), (1, 7), (1, 8)],
-                  "tfidfvectorizer__min_df": [x for x in range(2, 10)],
-                  "xgbclassifier__max_depth": [x for x in range(1, 10)],
+                  "tfidfvectorizer__min_df": [x for x in range(2, 10)]
                   }
 
     grid = GridSearchCV(pipe, param_grid, cv=5)

@@ -24,8 +24,8 @@ def owakati():
         exit()
 
     # neologd付きMeCabを分かち書きで設置。
-    tagger = MeCab.Tagger("-Owakati -d /usr/local/lib/mecab/dic/mecab-ipadic-neologd")
-    # tagger = MeCab.Tagger("-Owakati -d /usr/lib/x86_64-linux-gnu/mecab/dic/mecab-ipadic-neologd")
+    # tagger = MeCab.Tagger("-Owakati -d /usr/local/lib/mecab/dic/mecab-ipadic-neologd")
+    tagger = MeCab.Tagger("-Owakati -d /usr/lib/x86_64-linux-gnu/mecab/dic/mecab-ipadic-neologd")
 
     # Python3特有のバグを回避。
     tagger.parse(' ')
@@ -68,13 +68,18 @@ def grid_search(df):
 
     pipe = make_pipeline(
         TfidfVectorizer(use_idf=True, token_pattern=u'(?u)\\b\\w+\\b', stop_words=stop_words),
-        xgb.sklearn.XGBClassifier(max_depth=3, random_state=0)
+        xgb.sklearn.XGBClassifier(random_state=0)
         )
 
-    param_grid = {"tfidfvectorizer__ngram_range": [(1, 7)],
-                  "tfidfvectorizer__min_df": [3],
-                  "xgbclassifier__reg_alpha": [0.9],
-                  "xgbclassifier__n_estimators": [25 * x for x in range(1,9)]
+    param_grid = {"tfidfvectorizer__ngram_range": [(1, 5), (1, 6), (1, 7), (1, 8)],
+                  "tfidfvectorizer__min_df": [x for x in range(3, 10)],
+                  "xgbclassifier__max_depth": [3, 5, 7],
+                  "xgbclassifier__reg_alpha": [0.5, 0.7, 0.9],
+                  "xgbclassifier__n_estimators":[50, 75, 100, 125],
+                  "xgbclassifier__min_child_weight": [3, 5, 10],
+                  "xgbclassifier__colsample_bytree": [0.5, 0.6, 0.7, 0.8, 0.9],
+                  "xgbclassifier__colsample_bylevel": [0.5, 0.6, 0.7, 0.8, 0.9],
+                  "xgbclassifier__max_delta_step":[0.1]
                   }
 
     grid = GridSearchCV(pipe, param_grid, cv=5)
@@ -99,7 +104,7 @@ def xgb_clf(df):
 
     X_train, X_test, y_train, y_test = train_test_split(X_vecs, y, random_state=0)
 
-    model = xgb.sklearn.XGBClassifier(max_depth=3, random_state=0, reg_alpha=0.9)
+    model = xgb.sklearn.XGBClassifier(max_depth=3, random_state=0, reg_alpha=0.9, n_estimators=75)
     model.fit(X_train, y_train)
 
     print("Train Data Score:{}".format(model.score(X_train, y_train)))

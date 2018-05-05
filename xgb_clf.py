@@ -24,8 +24,8 @@ def owakati():
         exit()
 
     # neologd付きMeCabを分かち書きで設置。
-    # tagger = MeCab.Tagger("-Owakati -d /usr/local/lib/mecab/dic/mecab-ipadic-neologd")
-    tagger = MeCab.Tagger("-Owakati -d /usr/lib/x86_64-linux-gnu/mecab/dic/mecab-ipadic-neologd")
+    tagger = MeCab.Tagger("-Owakati -d /usr/local/lib/mecab/dic/mecab-ipadic-neologd")
+    # tagger = MeCab.Tagger("-Owakati -d /usr/lib/x86_64-linux-gnu/mecab/dic/mecab-ipadic-neologd")
 
     # Python3特有のバグを回避。
     tagger.parse(' ')
@@ -98,13 +98,15 @@ def xgb_clf(df):
     X, y = split_data(df)
     stop_words = load_stop_word()
 
-    vectorizer = TfidfVectorizer(min_df=3, use_idf=T, token_pattern=u'(?u)\\b\\w+\\b', stop_words=stop_words, ngram_range=(1, 7), reg_alpha=0.9)
+    vectorizer = TfidfVectorizer(min_df=3, use_idf=True, token_pattern=u'(?u)\\b\\w+\\b', stop_words=stop_words, ngram_range=(1, 7))
     X_vecs = vectorizer.fit_transform(X)
     X_vecs = X_vecs.toarray()
 
     X_train, X_test, y_train, y_test = train_test_split(X_vecs, y, random_state=0)
 
-    model = xgb.sklearn.XGBClassifier(max_depth=3, random_state=0, reg_alpha=0.9, n_estimators=75)
+    model = xgb.sklearn.XGBClassifier(max_depth=3, random_state=0, reg_alpha=0.9, n_estimators=75,
+                                      colsample_bylevel=0.8, colsample_bytree=0.7, max_delta_step=0.1, child_weight=0.5)
+
     model.fit(X_train, y_train)
 
     print("Train Data Score:{}".format(model.score(X_train, y_train)))
@@ -113,5 +115,5 @@ def xgb_clf(df):
 if __name__ == "__main__":
 
     df = owakati()
-    grid_search(df)
-    # xgb_clf(df)
+    # grid_search(df)
+    xgb_clf(df)

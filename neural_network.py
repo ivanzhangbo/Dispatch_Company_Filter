@@ -68,14 +68,13 @@ def grid_search(df):
 
     pipe = make_pipeline(
         TfidfVectorizer(use_idf=True, token_pattern=u'(?u)\\b\\w+\\b', stop_words=stop_words),
-        MLPClassifier(solver="lbfgs")
+        MLPClassifier(solver="lbfgs", hidden_layer_sizes=(100,100,100,100,), random_state=0
         )
 
     param_grid = {"tfidfvectorizer__ngram_range": [(1, 6), (1, 7), (1, 8)],
                   "tfidfvectorizer__min_df": [x for x in range(2, 10)],
                   "mlpclassifier__alpha": [1**x for x in range(-3, 3)],
-                  "mlpclassifier__activation": ["relu", "tahn"],
-                  "mlpclassifier__hidden_layer_sizes": [(100,),(200,),(300,)]
+                  "mlpclassifier__activation": ["relu", "tahn"]
                   }
 
     grid = GridSearchCV(pipe, param_grid, cv=5)

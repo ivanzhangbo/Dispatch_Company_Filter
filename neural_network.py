@@ -71,8 +71,8 @@ def grid_search(df):
         MLPClassifier(solver="lbfgs", hidden_layer_sizes=(100,100,100,100,), random_state=0)
         )
 
-    param_grid = {"tfidfvectorizer__ngram_range": [(1, 6), (1, 7), (1, 8)],
-                  "tfidfvectorizer__min_df": [x for x in range(2, 10)],
+    param_grid = {"tfidfvectorizer__ngram_range": [(1, 8)],
+                  "tfidfvectorizer__min_df": [3],
                   "mlpclassifier__alpha": [1**x for x in range(-3, 3)],
                   "mlpclassifier__activation": ["relu", "tanh"]
                   }
@@ -80,12 +80,12 @@ def grid_search(df):
     grid = GridSearchCV(pipe, param_grid, cv=5)
     grid.fit(X, y)
 
-    with open("result_nlp.txt", "w") as file:
-        print("Train Data Score:{}".format(model.score(X_train, y_train)), file=file)
-        print("Test Data Score:{}".format(model.score(X_test, y_test)), file=file)
+    with open("result_mlp.txt", "w") as file:
+        print("Best Score: {:.3f}".format(grid.best_score_), file=file)
+        print("Best Parameters:\n{}".format(grid.best_params_) file=file)
 
 
-def nlp_clf(df):
+def mlp_clf(df):
     """
     grid_searchの結果からテストデータのスコアを確認します。
     """

@@ -77,8 +77,9 @@ def grid_search(df):
     grid = GridSearchCV(pipe, param_grid, cv=5)
     grid.fit(X, y)
 
-    print("Best Score: {:.3f}".format(grid.best_score_))
-    print("Best Parameters:\n{}".format(grid.best_params_))
+    with open("result_logi.txt", "w") as file:
+        print("Best Score: {:.3f}".format(grid.best_score_), file=file)
+        print("Best Parameters:\n{}".format(grid.best_params_) file=file)
 
 
 def logreg(df):
@@ -98,9 +99,8 @@ def logreg(df):
     model = LogisticRegression(C=1.0)
     model.fit(X_train, y_train)
 
-    with open("result_logi.txt", "w") as file:
-        print("Train Data Score:{}".format(model.score(X_train, y_train)), file=file)
-        print("Test Data Score:{}".format(model.score(X_test, y_test)), file=file)
+    print("Train Data Score:{}".format(model.score(X_train, y_train)))
+    print("Test Data Score:{}".format(model.score(X_test, y_test)))
 
 if __name__ == "__main__":
 

@@ -68,7 +68,7 @@ def grid_search(df):
 
     pipe = make_pipeline(
         TfidfVectorizer(use_idf=True, token_pattern=u'(?u)\\b\\w+\\b', stop_words=stop_words),
-        MLPClassifier(solver="lbfgs", hidden_layer_sizes=(100,100,100,100,), random_state=0
+        MLPClassifier(solver="lbfgs", hidden_layer_sizes=(100,100,100,100,), random_state=0)
         )
 
     param_grid = {"tfidfvectorizer__ngram_range": [(1, 6), (1, 7), (1, 8)],

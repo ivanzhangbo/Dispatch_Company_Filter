@@ -1,6 +1,7 @@
 import sys
 import pickle
 from crawling_type import get_detail
+from exe_ml import owakati
 
 argvs = sys.argv
 
@@ -15,7 +16,8 @@ with open("models/vectorizer.pickle", "rb") as f:
     vectorizer = pickle.load(f)
 
 df = get_detail(argvs[1])
-vec = vectorizer.transform(df['docs'])
+df = owakati(df)
+vec = vectorizer.transform(df['owakati'])
 flg = model.predict(vec)
 
 df = df.loc[0].values

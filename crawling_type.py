@@ -191,5 +191,5 @@ def get_all():
 
 if __name__ == "__main__":
 
-    # get_index()
+    get_index()
     get_all()

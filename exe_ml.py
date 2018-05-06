@@ -2,7 +2,6 @@ import os
 import MeCab
 import pickle
 import pandas as pd
-import concurrent.futures
 from sys import exit
 import xgboost as xgb
 from sklearn.linear_model import LogisticRegression
@@ -16,19 +15,10 @@ from sklearn.model_selection import GridSearchCV
 自然言語処理と機械学習を行うモジュールです。
 """
 
-def owakati():
+def owakati(df):
     """
     文章を形態素解析してコーパスを作ります。
     """
-
-    # 一番新しい学習試験用ファイルを読み込む。ないならexit。
-    try:
-        f_name = (sorted(os.listdir("train_test_data"), reverse=True))[0]
-        df = pd.read_csv("train_test_data/" + f_name)
-
-    except:
-        print("There's no train_test_data file")
-        exit()
 
     # neologd付きMeCabを分かち書きで設置。
     tagger = MeCab.Tagger("-Owakati -d /usr/local/lib/mecab/dic/mecab-ipadic-neologd")
@@ -132,7 +122,16 @@ def ml_exe(df, pipe, param_grid, ml_name):
 
 if __name__ == "__main__":
 
-    df = owakati()
+    # 一番新しい学習試験用ファイルを読み込む。ないならexit。
+    try:
+        f_name = (sorted(os.listdir("train_test_data"), reverse=True))[0]
+        df = pd.read_csv("train_test_data/" + f_name)
+
+    except:
+        print("There's no train_test_data file")
+        exit()
+
+    df = owakati(df)
 
     # param_grid = {"xgbclassifier__max_depth": [3, 5, 7],
     #               "xgbclassifier__reg_alpha": [0.5, 0.7, 0.9],
@@ -164,5 +163,4 @@ if __name__ == "__main__":
 
     pipe = make_pipeline(LogisticRegression())
 
-    with concurrent.futures.ProcessPoolExecutor(max_workers=4) as exe:
-        ml_exe(df, pipe, param_grid, "logisticregression")
+    ml_exe(df, pipe, param_grid, "logisticregression")

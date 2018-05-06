@@ -2,6 +2,9 @@ import os
 import pickle
 import pandas as pd
 import matplotlib.pyplot as plt
+"""
+学習の結果からどのような単語が効果的なのかを調べます。
+"""
 
 # 保存したMLモデルを開く。
 with open("models/logisticregression_model.pickle", "rb") as f:

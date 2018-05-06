@@ -2,6 +2,9 @@ import sys
 import pickle
 from crawling_type import get_detail
 from exe_ml import owakati
+"""
+urlからその求人が派遣会社なのか否かを自動判別します。
+"""
 
 # コマンドの引数からurlを取得する。
 argvs = sys.argv

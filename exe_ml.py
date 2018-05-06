@@ -21,7 +21,10 @@ def owakati(df):
     """
 
     # neologd付きMeCabを分かち書きで設置。
-    tagger = MeCab.Tagger("-Owakati -d /usr/local/lib/mecab/dic/mecab-ipadic-neologd")
+    tagger = MeCab.Tagger("-Owakati")
+
+    # ipadic-neologdを使う場合は以下を参考に。
+    # tagger = MeCab.Tagger("-Owakati -d /usr/local/lib/mecab/dic/mecab-ipadic-neologd")
     # tagger = MeCab.Tagger("-Owakati -d /usr/lib/x86_64-linux-gnu/mecab/dic/mecab-ipadic-neologd")
 
     # Python3特有のバグを回避。
@@ -115,9 +118,9 @@ def ml_exe(df, pipe, param_grid, ml_name):
 
     # ログを保存。
     with open("log/result_" + ml_name + ".txt", "w") as file:
-        print("Best Parameters:\n{}".format(grid.best_params_), file=file)
         print("Best Score: {:.3f}".format(grid.best_score_), file=file)
         print("Test Score: {:.3f}".format(test_score), file=file)
+        print("Best Parameters:\n{}".format(grid.best_params_), file=file)
 
 
 if __name__ == "__main__":

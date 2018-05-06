@@ -79,16 +79,14 @@ def grid_search(df):
 
     pipe = make_pipeline(xgb.sklearn.XGBClassifier(random_state=0))
 
-    param_grid = {"xgbclassifier__max_delta_step":[0.1]}
-
-    # param_grid = {"xgbclassifier__max_depth": [3, 5, 7],
-    #               "xgbclassifier__reg_alpha": [0.5, 0.7, 0.9],
-    #               "xgbclassifier__n_estimators":[50, 75, 100, 125],
-    #               "xgbclassifier__min_child_weight": [3, 5, 10],
-    #               "xgbclassifier__colsample_bytree": [0.5, 0.6, 0.7, 0.8, 0.9],
-    #               "xgbclassifier__colsample_bylevel": [0.5, 0.6, 0.7, 0.8, 0.9],
-    #               "xgbclassifier__max_delta_step":[0.1]
-    #               }
+    param_grid = {"xgbclassifier__max_depth": [3, 5, 7],
+                  "xgbclassifier__reg_alpha": [0.5, 0.7, 0.9],
+                  "xgbclassifier__n_estimators":[50, 75, 100, 125],
+                  "xgbclassifier__min_child_weight": [3, 5, 10],
+                  "xgbclassifier__colsample_bytree": [0.5, 0.6, 0.7, 0.8, 0.9],
+                  "xgbclassifier__colsample_bylevel": [0.5, 0.6, 0.7, 0.8, 0.9],
+                  "xgbclassifier__max_delta_step":[0.1]
+                  }
 
     grid = GridSearchCV(pipe, param_grid, cv=5)
     grid.fit(X_train, y_train)
@@ -140,6 +138,6 @@ def xgb_clf(df):
 if __name__ == "__main__":
 
     df = owakati()
-    with concurrent.futures.ProcessPoolExecutor(max_workers=4) as exe:
+    with concurrent.futures.ProcessPoolExecutor(max_workers=8) as exe:
         grid_search(df)
     #     exe.submit(xgb_clf, df)

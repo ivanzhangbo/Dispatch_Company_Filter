@@ -7,13 +7,17 @@ from time import sleep
 from bs4 import BeautifulSoup
 from datetime import datetime
 
+"""
+クローリングとスクレイピングを行うモジュールです。
+"""
+
 # ユーザエージェントの指定。
 headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36',
            'referer': 'https://console.cloud.google.com'}
 
 def get_index():
     """
-    IT系求人のインデックスページに対してクローリング & スクレイピングを行い、調査対象となるURLを取得する関数です。
+    IT系求人のインデックスページに対してクローリング & スクレイピングを行い、調査対象となるURLを取得します。
     「./index/」以下にcsvファイルを吐き出します。
     """
 
@@ -62,6 +66,10 @@ def get_index():
 
 
 def get_detail(url):
+    """
+    urlを引数に詳細ページをクローリング & スクレイピングして、
+    結果をDFオブジェクトで返却します。
+    """
 
     # クローリングのマナー。
     sleep(1)
@@ -71,6 +79,11 @@ def get_detail(url):
 
     # URLをセットしてリクエスト。
     detail_html = requests.get(url, headers=headers)
+
+    # ステータスコードが200以外なら処理を終了。
+    if detail_html.status_code != 200:
+        print("request error")
+        return df
 
     # スクレイピング開始。
     soup =  BeautifulSoup(detail_html.content, "lxml")
@@ -128,8 +141,6 @@ def get_detail(url):
         docs = re.sub(r"転職サイト＠type.*?ALLRIGHTSRESERVED", '', docs)
         docs = re.sub(r"掲載終了予定日.*?掲載終了日前に募集を終了する可能性があります》", '', docs)
 
-
-
     except:
         pass
 
@@ -140,6 +151,10 @@ def get_detail(url):
 
 
 def saving(df):
+    """
+    スクレイピングの結果を1保存します。
+    """
+
     # 保存先ディレクトリがないなら作る。
     try:
         os.mkdir("data")
@@ -150,8 +165,10 @@ def saving(df):
     df.to_csv("data/data_" + datetime.now().strftime("%Y%m%d") + ".csv",  index=False, header=False, mode='a')
 
 
-
 def get_all():
+    """
+    urlsファイルにある分だけget_detailとsavingを呼び出します。
+    """
 
     # urlsオブジェクトが作られていないなら、一番新しいurls_YYYYmmdd.csvを読み込む。ないならexit。
     try:

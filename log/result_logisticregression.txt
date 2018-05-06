@@ -1,0 +1,4 @@
+Best Parameters:
+{'logisticregression__C': 10000, 'logisticregression__fit_intercept': True, 'logisticregression__penalty': 'l2', 'logisticregression__random_state': 0}
+Best Score: 0.787
+Test Score: 0.800

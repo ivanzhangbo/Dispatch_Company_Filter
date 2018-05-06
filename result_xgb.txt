@@ -1,4 +1,0 @@
-Best Parameters:
-{'xgbclassifier__max_delta_step': 0.1}
-Best Score: 0.793
-Test Score: 0.640

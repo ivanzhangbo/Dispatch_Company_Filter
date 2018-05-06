@@ -1,0 +1,4 @@
+Best Parameters:
+{'xgbclassifier__colsample_bylevel': 0.8, 'xgbclassifier__colsample_bytree': 0.7, 'xgbclassifier__max_delta_step': 0.1, 'xgbclassifier__max_depth': 3, 'xgbclassifier__min_child_weight': 5, 'xgbclassifier__n_estimators': 50, 'xgbclassifier__reg_alpha': 0.3}
+Best Score: 0.827
+Test Score: 0.680

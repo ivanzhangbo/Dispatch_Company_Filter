@@ -2,6 +2,10 @@ import pandas as pd
 from sys import os
 from datetime import datetime
 
+"""
+前処理を行うモジュールです。
+"""
+
 # 一番新しいデータファイルを読み込む。ないならexit。
 try:
     f_name = (sorted(os.listdir("data"), reverse=True))[0]

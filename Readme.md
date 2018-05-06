@@ -5,7 +5,7 @@ SESやエンジニア派遣を行っている企業の求人広告を自動で�
 このリポジトリを「git clone」して、type様のIT系求人広告から適当に募集情報ページのURLを用意します。  
 ターミナル上でリポジトリのディレクトリまで移動して、  
 ```
-python flg_checker 'https://type.jp/job-1/xxxxx_detail/?companyMessage=false&pathway=4'
+python flg_checker.py 'https://type.jp/job-1/xxxxx_detail/?companyMessage=false&pathway=4'
 ```
 上記を参考にコマンドを打ち込んでください。  
 URLをクオーテーションで囲うのを忘れずに。  
@@ -21,7 +21,7 @@ URLをクオーテーションで囲うのを忘れずに。
 派遣フラグが1ならばそういう会社さんで、0なら自社開発を行っている会社さんということになります。  
 だいたい80%くらいの確率で当たります。  
 
-#### 動かなかった場合
+###### 動かなかった場合
 動かなかった場合は必要なモジュールが入っていないか、そもそもpython3が入ってないケースが考えられます。  
 モジュールが足りない場合は各pyファイルのimport先を見て必要なものをpipなりcondaなりで落として頂ければ。  
 特にMeCabは難易度が高いので、もし入っていなければ[ここ](https://github.com/tomboy-jp/MeCab_dep)を参考にしてください。  

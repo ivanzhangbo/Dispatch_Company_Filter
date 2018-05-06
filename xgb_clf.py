@@ -60,7 +60,7 @@ def load_stop_word():
     return stop_words
 
 
-def grid_search(df):
+def xgb_clf(df):
     """
     tf-idfとXGBに最適のパラメータを探ります。
     """
@@ -109,32 +109,9 @@ def grid_search(df):
         print("Test Score: {:.3f}".format(test_score), file=file)
 
 
-def xgb_clf(df):
-    """
-    grid_searchの結果からテストデータのスコアを確認します。
-    """
-
-    X, y = split_data(df)
-    stop_words = load_stop_word()
-
-    vectorizer = TfidfVectorizer(min_df=3, use_idf=True, token_pattern=u'(?u)\\b\\w+\\b', stop_words=stop_words, ngram_range=(1, 7))
-    X_vecs = vectorizer.fit_transform(X)
-    X_vecs = X_vecs.toarray()
-
-    X_train, X_test, y_train, y_test = train_test_split(X_vecs, y, random_state=0)
-
-    model = xgb.sklearn.XGBClassifier(max_depth=3, random_state=0, reg_alpha=0.9, n_estimators=50)
-
-    model.fit(X_train, y_train)
-
-    with open("score_xgb.txt", "w") as file:
-        print("Train Data Score:{}".format(model.score(X_train, y_train)),file=file)
-        print("Test Data Score:{}".format(model.score(X_test, y_test)), file=file)
-
-
 if __name__ == "__main__":
 
     df = owakati()
+
     with concurrent.futures.ProcessPoolExecutor(max_workers=8) as exe:
-        grid_search(df)
-    #     exe.submit(xgb_clf, df)
+        exe.submit(xgb_clf, df)

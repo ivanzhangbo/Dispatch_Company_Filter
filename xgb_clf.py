@@ -11,7 +11,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.pipeline import make_pipeline
 from sklearn.model_selection import GridSearchCV
 
-
 def owakati():
     """
     文章を形態素解析して分かち書きにします。
@@ -72,7 +71,7 @@ def grid_search(df):
     vectorizer = TfidfVectorizer(min_df=3, use_idf=True, token_pattern=u'(?u)\\b\\w+\\b', stop_words=stop_words, ngram_range=(1, 7))
     X_vecs = vectorizer.fit_transform(X)
 
-    feature_names = vectorizer.get_feature_names()
+    # feature_names = vectorizer.get_feature_names()
 
     X_vecs = X_vecs.toarray()
     X_train, X_test, y_train, y_test = train_test_split(X_vecs, y, random_state=0)
@@ -97,12 +96,10 @@ def grid_search(df):
         pass
 
     with open("models/xgb_model.pickle", "wb") as model:
-        pickle.dump(grid.best_estimator_, model)
+        pickle.dump(grid.best_estimator_.named_steps['xgbclassifier'], model)
 
     with open("models/vectorizer.pickle", "wb") as vec:
         pickle.dump(vectorizer, vec)
-
-    feature_importances = grid.best_estimator_.named_steps['xgbclassifier'].feature_importances_
 
     test_score = grid.best_estimator_.score(X_test, y_test)
 
